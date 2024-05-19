@@ -19,6 +19,12 @@ fn handle_connection(mut stream: TcpStream) {
                 format!(
                     "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{contents}"
                 )
+            } else if path.starts_with("/user-agent") {
+                let contents = request.headers.get("User-Agent").unwrap();
+                let length = contents.len();
+                format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{contents}"
+                )
             } else {
                 String::from("HTTP/1.1 404 Not Found\r\n\r\n")
             };
