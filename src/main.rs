@@ -11,7 +11,10 @@ fn handle_connection(mut stream: TcpStream) {
         .map(|result| result.unwrap())
         .take_while(|line| !line.is_empty())
         .collect();
-    let response = "HTTP/1.1 200 OK\r\n\r\n";
+    let response = match http_request[0] == "GET / HTTP/1.1" {
+        true => "HTTP/1.1 200 OK\r\n\r\n",
+        false => "HTTP/1.1 404 Not Found\r\n\r\n",
+    };
     stream.write_all(response.as_bytes()).unwrap();
     dbg!(http_request);
 }
