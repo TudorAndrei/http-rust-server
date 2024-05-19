@@ -20,7 +20,7 @@ fn handle_connection(mut stream: TcpStream) {
                     "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{contents}"
                 )
             } else {
-                String::from("")
+                String::from("HTTP/1.1 404 Not Found\r\n\r\n")
             };
             response
         }
