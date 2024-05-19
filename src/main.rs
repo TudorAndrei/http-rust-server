@@ -13,10 +13,10 @@ fn handle_connection(mut stream: TcpStream, directory: String) {
     let response = match request.status_line.http_method.as_str() {
         "GET" => {
             let path = request.status_line.path.as_str();
-            let response = if path.starts_with("/") && path.len() == 1 {
+            let response = if path.starts_with('/') && path.len() == 1 {
                 String::from("HTTP/1.1 200 OK\r\n\r\n")
             } else if path.starts_with("/echo") {
-                let query: Vec<&str> = path.split("/").collect();
+                let query: Vec<&str> = path.split('/').collect();
                 let contents = query.last().unwrap();
                 let length = contents.len();
                 format!(
@@ -65,7 +65,7 @@ fn main() {
     }
     let dir = match directory {
         Some(dir) => dir,
-        None => panic!("Dir not found"),
+        None => String::from(""),
     };
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
     let pool = ThreadPoll::new(4);
