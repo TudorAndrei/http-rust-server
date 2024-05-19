@@ -61,7 +61,7 @@ fn handle_connection(mut stream: TcpStream, directory: String) {
                 let contents = request.body;
                 let mut file = File::create(file_path).unwrap();
                 file.write_all(&contents).unwrap();
-                String::from("HTTP/1.1 201 OK\r\n\r\n")
+                String::from("HTTP/1.1 201 Created\r\n\r\n")
             } else {
                 String::from("HTTP/1.1 404 Not Found\r\n\r\n")
             };
