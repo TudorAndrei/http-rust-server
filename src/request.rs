@@ -1,10 +1,11 @@
 use std::collections::HashMap;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Read};
 use std::net::TcpStream;
 #[derive(Debug)]
 pub struct Request {
     pub status_line: StatusLine,
     pub headers: HashMap<String, String>,
+    pub body: Vec<u8>,
 }
 
 #[derive(Debug)]
@@ -50,10 +51,19 @@ impl Request {
             }
             headers.insert(parts[0].to_string(), parts[1].to_string());
         }
-
+        let mut body = Vec::new();
+        if let Some(content_length) = headers.get("Content-Length") {
+            let length: usize = content_length
+                .parse()
+                .map_err(|_| "Invalid Content-Length header")?;
+            if reader.take(length as u64).read_to_end(&mut body).is_err() {
+                return Err("Error reading body from stream");
+            }
+        }
         Ok(Request {
             status_line,
             headers,
+            body,
         })
     }
 }

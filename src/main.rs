@@ -2,7 +2,8 @@ pub mod request;
 use http_server_starter_rust::ThreadPoll;
 use request::Request;
 use std::{
-    env, fs,
+    env,
+    fs::{self, File},
     io::Write,
     net::{TcpListener, TcpStream},
     path::Path,
@@ -44,6 +45,23 @@ fn handle_connection(mut stream: TcpStream, directory: String) {
                 format!(
                     "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{contents}"
                 )
+            } else {
+                String::from("HTTP/1.1 404 Not Found\r\n\r\n")
+            };
+            response
+        }
+        "POST" => {
+            let path = request.status_line.path.as_str();
+            let response = if path.starts_with('/') && path.len() == 1 {
+                String::from("HTTP/1.1 200 OK\r\n\r\n")
+            } else if path.starts_with("/files") {
+                let params: Vec<&str> = path.split('/').collect();
+                let query = params.last().unwrap();
+                let file_path = format!("{directory}/{query}");
+                let contents = request.body;
+                let mut file = File::create(file_path).unwrap();
+                file.write_all(&contents).unwrap();
+                String::from("HTTP/1.1 201 OK\r\n\r\n")
             } else {
                 String::from("HTTP/1.1 404 Not Found\r\n\r\n")
             };
