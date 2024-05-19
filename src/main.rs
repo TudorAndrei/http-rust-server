@@ -2,14 +2,33 @@ pub mod request;
 
 // Uncomment this block to pass the first stage
 use request::Request;
-use std::{
-    io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream},
-};
+use std::io::Write;
+use std::net::{TcpListener, TcpStream};
 
 fn handle_connection(mut stream: TcpStream) {
-    let request = Request::new(stream);
-    dbg!(http_request);
+    let request = Request::new(&mut stream).unwrap();
+    let response = match request.status_line.http_method.as_str() {
+        "GET" => {
+            let path = request.status_line.path.as_str();
+            let response = if path.starts_with("/") && path.len() == 1 {
+                String::from("HTTP/1.1 200 OK\r\n\r\n")
+            } else if path.starts_with("/echo") {
+                let query: Vec<&str> = path.split("/").collect();
+                let contents = query.last().unwrap();
+                let length = contents.len();
+                format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{contents}"
+                )
+            } else {
+                String::from("")
+            };
+            response
+        }
+        &_ => todo!(),
+    };
+    // dbg!(response);
+    stream.write_all(response.as_bytes()).unwrap();
+    dbg!(request);
 }
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.

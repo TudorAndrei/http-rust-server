@@ -1,20 +1,20 @@
 use std::collections::HashMap;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader};
 use std::net::TcpStream;
 #[derive(Debug)]
 pub struct Request {
-    status_line: StatusLine,
-    headers: HashMap<String, String>,
+    pub status_line: StatusLine,
+    pub headers: HashMap<String, String>,
 }
 
 #[derive(Debug)]
-struct StatusLine {
-    http_method: String,
-    path: String,
-    http_protocol: String,
+pub struct StatusLine {
+    pub http_method: String,
+    pub path: String,
+    pub http_protocol: String,
 }
 impl Request {
-    fn new(stream: &mut TcpStream) -> Result<Request, &'static str> {
+    pub fn new(stream: &mut TcpStream) -> Result<Request, &'static str> {
         let mut reader = BufReader::new(stream);
         let mut request_line = String::new();
         if reader.read_line(&mut request_line).is_err() {
