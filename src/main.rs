@@ -31,16 +31,9 @@ fn handle_connection(mut stream: TcpStream) {
         }
         &_ => todo!(),
     };
-    // dbg!(response);
     stream.write_all(response.as_bytes()).unwrap();
-    dbg!(request);
 }
 fn main() {
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
-    println!("Logs from your program will appear here!");
-
-    // Uncomment this block to pass the first stage
-    //
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
     let pool = ThreadPoll::new(4);
     for stream in listener.incoming() {
