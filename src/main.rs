@@ -1,6 +1,5 @@
 pub mod request;
-
-// Uncomment this block to pass the first stage
+use http_server_starter_rust::ThreadPoll;
 use request::Request;
 use std::io::Write;
 use std::net::{TcpListener, TcpStream};
@@ -43,12 +42,12 @@ fn main() {
     // Uncomment this block to pass the first stage
     //
     let listener = TcpListener::bind("127.0.0.1:4221").unwrap();
-    //
+    let pool = ThreadPoll::new(4);
     for stream in listener.incoming() {
         match stream {
-            Ok(_stream) => {
+            Ok(_stream) => pool.execute(|| {
                 handle_connection(_stream);
-            }
+            }),
             Err(e) => {
                 println!("error: {}", e);
             }
